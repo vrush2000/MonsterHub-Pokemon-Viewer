@@ -6,9 +6,8 @@
       "use": "@vercel/static-build",
       "config": {
         "buildCommand": "npm run build:client",
-        "outputDirectory": "build/client"
+        "outputDirectory": "client"
       }
     }
   ]
 }
-

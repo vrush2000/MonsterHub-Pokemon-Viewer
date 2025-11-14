@@ -1,0 +1,403 @@
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer-effect {
+  background: #f0f0f0;
+  background-image: linear-gradient(to right, #f0f0f0 0%, #e0e0e0 20%, #f0f0f0 40%, #f0f0f0 100%);
+  background-repeat: no-repeat;
+  background-size: 1000px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.AppWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.HeaderWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 20px;
+  transition:
+    transform 0.3s ease-out,
+    opacity 0.3s ease-out,
+    visibility 0s;
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.HeaderWrapper.hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform 0.3s ease-out,
+    opacity 0.3s ease-out,
+    visibility 0s 0.3s;
+}
+
+.SearchContainer {
+  background: white;
+  border-radius: 50px;
+  padding: 15px 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  visibility: visible;
+}
+
+.SearchContainer.hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform 0.3s ease-out,
+    opacity 0.3s ease-out,
+    visibility 0s 0.3s;
+}
+
+.SearchIcon {
+  font-size: 20px;
+}
+
+.ClearIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.InputMock {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.SearchInput {
+  flex: 1;
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  background: transparent;
+}
+
+.SearchInput::placeholder {
+  color: #999;
+}
+
+.ClearButton {
+  cursor: pointer;
+  color: #999;
+  font-size: 20px;
+  padding: 5px 10px;
+  transition: color 0.2s;
+}
+
+.ClearButton:hover {
+  color: #333;
+}
+
+.ListContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+.Card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.Card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.CardImage {
+  width: 100%;
+  height: 150px;
+  margin-bottom: 15px;
+}
+
+.CardImagePlaceholder {
+  width: 100%;
+  height: 150px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.PlaceholderText {
+  color: #999;
+  font-size: 14px;
+}
+
+.CardContent {
+  text-align: center;
+}
+
+.CardId {
+  font-size: 12px;
+  color: #999;
+  font-weight: bold;
+  display: block;
+}
+
+.CardName {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 5px 0 10px;
+  color: #333;
+  display: block;
+}
+
+.TypeContainer {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.TypeBadge {
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 11px;
+  font-weight: bold;
+  color: white;
+}
+
+.Type-grass,
+.type-grass {
+  background: #78c850;
+}
+.Type-fire,
+.type-fire {
+  background: #f08030;
+}
+.Type-water,
+.type-water {
+  background: #6890f0;
+}
+.Type-electric,
+.type-electric {
+  background: #f8d030;
+  color: #333;
+}
+.Type-poison,
+.type-poison {
+  background: #a040a0;
+}
+.Type-bug,
+.type-bug {
+  background: #a8b820;
+}
+.Type-normal,
+.type-normal {
+  background: #a8a878;
+}
+.Type-fairy,
+.type-fairy {
+  background: #ee99ac;
+}
+.Type-fighting,
+.type-fighting {
+  background: #c03028;
+}
+.Type-psychic,
+.type-psychic {
+  background: #f85888;
+}
+.Type-rock,
+.type-rock {
+  background: #b8a038;
+}
+.Type-ghost,
+.type-ghost {
+  background: #705898;
+}
+.Type-ice,
+.type-ice {
+  background: #98d8d8;
+}
+.Type-dragon,
+.type-dragon {
+  background: #7038f8;
+}
+.Type-dark,
+.type-dark {
+  background: #705848;
+}
+.Type-steel,
+.type-steel {
+  background: #b8b8d0;
+}
+.Type-ground,
+.type-ground {
+  background: #e0c068;
+}
+.Type-flying,
+.type-flying {
+  background: #a890f0;
+}
+
+.StatusMessage {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  min-height: 200px;
+}
+
+.StatusText {
+  font-size: 16px;
+  color: gray;
+  text-align: center;
+}
+
+.LoadingMore {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  width: 100%;
+  min-height: 100px;
+}
+
+.LoadingMoreText {
+  font-size: 14px;
+  color: white;
+  text-align: center;
+  background: rgb(194, 194, 194);
+  padding: 10px 20px;
+  border-radius: 20px;
+}
+
+.LoadingSpinner {
+  width: 100px;
+  height: 100px;
+}
+
+.EndMessage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  width: 100%;
+  min-height: 50px;
+}
+
+.EndMessageText {
+  font-size: 14px;
+  color: white;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .ListContainer {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+
+  .StatName {
+    width: 80px;
+    font-size: 12px;
+  }
+
+  .EvolutionImage {
+    width: 60px;
+    height: 60px;
+  }
+
+  .PopupContent {
+    background: white;
+    max-width: 90vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .AppWrapper {
+    padding: 10px;
+  }
+
+  .SearchContainer {
+    padding: 10px 20px;
+  }
+
+  .ListContainer {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  .Card {
+    padding: 15px;
+  }
+
+  .CardImage {
+    height: 100px;
+  }
+
+  .CardImagePlaceholder {
+    height: 100px;
+  }
+
+  .PopupName {
+    font-size: 24px;
+  }
+
+  .PopupImage {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+.ScrollContent {
+  flex: 1;
+  padding: 0 20px;
+  padding-top: 80px;
+}
+
+.dflex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.bg-image {
+  position: absolute;
+  opacity: 0.2;
+  width: 120%;
+  height: 120%;
+  top: 55%;
+  left: 50%;
+  z-index: 0;
+  transform: translate(-50%, -50%) rotate(-25deg);
+}

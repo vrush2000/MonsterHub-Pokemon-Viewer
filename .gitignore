@@ -1,0 +1,42 @@
+# Dependencies
+/node_modules
+
+# Build artifacts
+/build
+/dist
+/out
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# IDEs
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Android
+/android/build/
+/android/app/build/
+/android/.gradle/
+/android/local.properties
+/android/.idea/
+*.apk
+*.ap_
+*.aab
+
+# Apple
+/apple/Pods/
+/apple/build/
+/apple/DerivedData/
+*.ipa
+
+# Other
+.DS_Store

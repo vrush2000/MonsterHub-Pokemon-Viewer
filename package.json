@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "build": "npm run build:web && rsbuild build -c ./config/lynx.client.ts",
     "build:all": "concurrently \"npm run build:mobile\" \"npm run build:client\" \"npm run build:app\"",
     "build:mobile": "rspeedy build -c ./config/lynx.mobile.ts",
     "build:web": "rspeedy build -c ./config/lynx.web.ts",

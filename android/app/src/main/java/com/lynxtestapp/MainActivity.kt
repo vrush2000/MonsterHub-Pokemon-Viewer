@@ -16,7 +16,7 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var uri = "main.lynx.bundle"
+        var uri = "https://mpaas.vercel.app/assets/pokemon.lynx.bundle?fullscreen=true"
 //        uri = if (BuildConfig.DEBUG == false) {
 //            "http://10.63.105.81:3000/main.lynx.bundle?fullscreen=true"
 //        } else {

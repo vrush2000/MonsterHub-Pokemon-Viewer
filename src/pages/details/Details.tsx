@@ -1,18 +1,12 @@
 import { useState, useEffect } from '@lynx-js/react';
-import type {
-    PokemonDetail,
-    PokeApiPokemon,
-    PokeApiSpecies,
-    PokeApiEvolutionChain,
-} from '../../shares/pokemon.model';
+import { usePokemonStore } from '../../store/pokemonStore';
 import { capitalize } from '../../helpers/capitalize';
 import { useLocation, useNavigate } from 'react-router';
 import './Details.css';
 
 export function Details() {
     const location = useLocation();
-    const [detail, setDetail] = useState<PokemonDetail | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { detail, loading, fetchPokemonDetail } = usePokemonStore();
     const [evoLoadingId, setEvoLoadingId] = useState<number | null>(null);
     const pokemonId = new URLSearchParams(location.search).get("id");
     const navigate = useNavigate();
@@ -38,74 +32,10 @@ export function Details() {
     };
 
     useEffect(() => {
-        const fetchDetail = async () => {
-            try {
-                setLoading(true);
-
-                const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
-                const data: PokeApiPokemon = await response.json();
-
-                const speciesResponse = await fetch(data.species.url);
-                const speciesData: PokeApiSpecies = await speciesResponse.json();
-
-                const description = speciesData.flavor_text_entries
-                    .find((entry) => entry.language.name === 'en')
-                    ?.flavor_text.replace(/\f/g, ' ') || 'No description available.';
-
-                const moves = data.moves
-                    .slice(0, 20)
-                    .map((m) => ({
-                        name: m.move.name,
-                        level: m.version_group_details[0]?.level_learned_at || 0,
-                        power: m.move.power,
-                        accuracy: m.move.accuracy
-                    }))
-                    .sort((a, b) => a.level - b.level);
-
-                const evolutionResponse = await fetch(speciesData.evolution_chain.url);
-                const evolutionData: PokeApiEvolutionChain = await evolutionResponse.json();
-
-                const evolutionChain: { id: number; name: string; imageUrl: string }[] = [];
-                let currentEvolution = evolutionData.chain;
-
-                while (currentEvolution) {
-                    const speciesUrl = currentEvolution.species.url;
-                    const id = parseInt(speciesUrl.split('/').slice(-2, -1)[0]);
-                    evolutionChain.push({
-                        id,
-                        name: currentEvolution.species.name,
-                        imageUrl: `https://img.pokemondb.net/sprites/home/normal/${currentEvolution.species.name}.png`
-                    });
-                    currentEvolution = currentEvolution.evolves_to[0];
-                }
-
-                const detailData: PokemonDetail = {
-                    id: data.id,
-                    name: data.name,
-                    imageUrl: data.sprites.other.home.front_default,
-                    types: data.types.map((t) => t.type.name),
-                    stats: data.stats.map((s) => ({
-                        name: s.stat.name,
-                        value: s.base_stat
-                    })),
-                    height: data.height / 10,
-                    weight: data.weight / 10,
-                    abilities: data.abilities.map((a) => a.ability.name),
-                    evolutionChain,
-                    description,
-                    moves: moves,
-                };
-
-                setDetail(detailData);
-            } catch (error) {
-                console.error('Error fetching detail:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchDetail();
-    }, [pokemonId]);
+        if (pokemonId) {
+            fetchPokemonDetail(pokemonId);
+        }
+    }, [pokemonId, fetchPokemonDetail]);
 
     useEffect(() => {
         setEvoLoadingId(null);
@@ -189,7 +119,7 @@ export function Details() {
 
                 <view className="DetailSection">
                     <text className="SectionTitle">Moves</text>
-                    <scroll-view scroll-orientation="vertical" className="MovesContainer">
+                    {detail.moves && detail.moves.length > 0 && <scroll-view scroll-orientation="vertical" className="MovesContainer">
                         {[...detail.moves]
                             .filter(move => move.level > 0)
                             .sort((a, b) => b.level - a.level)
@@ -202,7 +132,7 @@ export function Details() {
                                 </view>
                             ))
                         }
-                    </scroll-view>
+                    </scroll-view>}
                 </view>
 
                 <view className="DetailSection">

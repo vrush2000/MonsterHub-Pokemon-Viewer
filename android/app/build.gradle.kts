@@ -74,7 +74,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,13 +85,13 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.7.0")
 
     // lynx dependencies
-    implementation("org.lynxsdk.lynx:lynx:3.4.1")
-    implementation("org.lynxsdk.lynx:lynx-jssdk:3.4.1")
-    implementation("org.lynxsdk.lynx:lynx-trace:3.4.1")
+    implementation("org.lynxsdk.lynx:lynx:3.5.0-rc.0")
+    implementation("org.lynxsdk.lynx:lynx-jssdk:3.4.2")
+    implementation("org.lynxsdk.lynx:lynx-trace:3.4.2")
     implementation("org.lynxsdk.lynx:primjs:2.14.1")
 
     // integrating image-service
-    implementation("org.lynxsdk.lynx:lynx-service-image:3.4.1")
+    implementation("org.lynxsdk.lynx:lynx-service-image:3.4.2")
 
     // image-service dependencies, if not added, images cannot be loaded; if the host APP needs to use other image libraries, you can customize the image-service and remove this dependency
     implementation("com.facebook.fresco:fresco:2.3.0")
@@ -102,18 +101,18 @@ dependencies {
     implementation("com.facebook.fresco:animated-base:2.3.0")
 
     // integrating log-service
-    implementation("org.lynxsdk.lynx:lynx-service-log:3.4.1")
+    implementation("org.lynxsdk.lynx:lynx-service-log:3.4.2")
 
     // integrating http-service
-    implementation("org.lynxsdk.lynx:lynx-service-http:3.4.1")
+    implementation("org.lynxsdk.lynx:lynx-service-http:3.4.2")
 
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
 
     // add devtool's dependencies
-    implementation ("org.lynxsdk.lynx:lynx-devtool:3.4.1")
-    implementation ("org.lynxsdk.lynx:lynx-service-devtool:3.4.1")
+    implementation ("org.lynxsdk.lynx:lynx-devtool:3.4.2")
+    implementation ("org.lynxsdk.lynx:lynx-service-devtool:3.4.2")
 
     // add xelement's dependencies
-    implementation ("org.lynxsdk.lynx:xelement:3.4.1")
-    implementation ("org.lynxsdk.lynx:xelement-input:3.4.1")
+    implementation ("org.lynxsdk.lynx:xelement:3.4.2")
+    implementation ("org.lynxsdk.lynx:xelement-input:3.5.0-rc.0")
 }

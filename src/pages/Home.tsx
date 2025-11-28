@@ -1,122 +1,44 @@
-import { useState, useEffect, useCallback } from '@lynx-js/react';
-import type { PokeAPIBasicResult, Pokemon, PokeApiPokemon } from '../shares/pokemon.model';
+import { useEffect } from '@lynx-js/react';
+import { usePokemon } from '../store/pokemonStore';
 import { PokemonCard } from '../components/Card';
 import { useNavigate } from "react-router";
 
 export function Home() {
   const navigate = useNavigate();
-  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const [filteredList, setFilteredList] = useState<Pokemon[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [headerVisible, setHeaderVisible] = useState(true);
-  const [lastScroll, setLastScroll] = useState(0);
+  const {
+    pokemonList, searchTerm, loading, loadingMore, error, hasMore,
+    searchResult, searchError, suggestions, suggestLoading, searchLoading,
+    headerVisible, lastScroll, setHeaderVisible, setLastScroll, fetchMasterList,
+    fetchInitialPokemons, loadMorePokemons, searchPokemons, setSearchTerm
+  } = usePokemon();
 
-  const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-
-  const [searchResult, setSearchResult] = useState<Pokemon | null>(null);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
-
-  const [suggestions, setSuggestions] = useState<Pokemon[]>([]);
-  const [suggestLoading, setSuggestLoading] = useState(false);
-
-  const fetchPokemonDetail = async (url: string): Promise<Pokemon> => {
-    const detailResponse = await fetch(url);
-    if (!detailResponse.ok) {
-      throw new Error(`Detail fetch error for ${url}`);
-    }
-    const details: PokeApiPokemon = await detailResponse.json();
-
-    const officialImageUrl = `https://img.pokemondb.net/sprites/home/normal/${details.name}.png`;
-
-    return {
-      id: details.id,
-      name: details.name,
-      imageUrl: officialImageUrl,
-      types: details.types.map((t) => t.type.name),
-    };
-  };
+  const filteredList = searchTerm
+    ? pokemonList.filter(
+        (p) =>
+          p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.id.toString() === searchTerm ||
+          p.types.some((t) => t.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+    : pokemonList;
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=50&offset=0');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const initialData: { results: PokeAPIBasicResult[] } = await response.json();
+    fetchInitialPokemons();
+    fetchMasterList(); // Panggil fetch master list di sini
+  }, [fetchInitialPokemons, fetchMasterList]);
 
-        const detailPromises = initialData.results.map(result =>
-          fetchPokemonDetail(result.url)
-        );
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      searchPokemons(searchTerm);
+    }, 300); // Debounce search
 
-        const fullList = await Promise.all(detailPromises);
-
-        setPokemonList(fullList);
-        setFilteredList(fullList);
-        setOffset(50);
-        setHasMore(true);
-      } catch (e) {
-        console.error("Fetch error:", e);
-        setError('Gagal memuat data Pokémon. Coba lagi nanti.');
-      } finally {
-        setLoading(false);
-      }
+    return () => {
+      clearTimeout(handler);
     };
-
-    fetchData();
-  }, []);
-
-  const loadMorePokemon = useCallback(async () => {
-    if (loadingMore || !hasMore || searchTerm) return;
-
-    try {
-      setLoadingMore(true);
-      const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=50&offset=${offset}`);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: { results: PokeAPIBasicResult[] } = await response.json();
-
-      if (data.results.length === 0) {
-        setHasMore(false);
-        return;
-      }
-
-      const detailPromises = data.results.map(result =>
-        fetchPokemonDetail(result.url)
-      );
-
-      const newPokemon = await Promise.all(detailPromises);
-
-      setPokemonList(prev => [...prev, ...newPokemon]);
-      setFilteredList(prev => searchTerm ? prev : [...prev, ...newPokemon]);
-      setOffset(prev => prev + 50);
-
-      if (offset + 50 >= 1000) {
-        setHasMore(false);
-      }
-    } catch (e) {
-      console.error("Load more error:", e);
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [offset, loadingMore, hasMore, searchTerm]);
-
-  const handleScrollToLower = useCallback(() => {
-    loadMorePokemon();
-  }, [loadMorePokemon]);
+  }, [searchTerm, searchPokemons]);
 
   const handleScroll = (e: { detail: { scrollTop: number; }; }) => {
     const scrollTop = e.detail.scrollTop;
-    if (scrollTop > lastScroll && scrollTop > 50) {
+    if (scrollTop > lastScroll && scrollTop > 100) {
       setHeaderVisible(false);
     } else {
       setHeaderVisible(true);
@@ -124,70 +46,8 @@ export function Home() {
     setLastScroll(scrollTop);
   };
 
-  useEffect(() => {
-    setSearchResult(null);
-    setSearchError(null);
-    setSuggestions([]);
-
-    if (!searchTerm) {
-      setFilteredList(pokemonList);
-      return;
-    }
-
-    const term = searchTerm.toLowerCase();
-
-    if (term.length >= 3) {
-      setSuggestLoading(true);
-      fetch(`https://pokeapi.co/api/v2/pokemon?limit=1000`)
-        .then(res => res.json())
-        .then(async data => {
-          const matched: PokeAPIBasicResult[] = data.results
-            .filter((p: PokeAPIBasicResult) => p.name.includes(term))
-            .slice(0, 10);
-
-          const detailList = await Promise.all(
-            matched.map((p) => fetchPokemonDetail(p.url))
-          );
-          setSuggestions(detailList);
-        })
-        .catch(() => setSuggestions([]))
-        .finally(() => setSuggestLoading(false));
-    }
-
-    const filtered = pokemonList.filter(pokemon =>
-      pokemon.name.toLowerCase().includes(term) ||
-      pokemon.id.toString() === term ||
-      pokemon.types.some(type => type.toLowerCase().includes(term))
-    );
-    setFilteredList(filtered);
-
-    if (filtered.length === 0 && term.length > 0) {
-      setSearchLoading(true);
-      fetch(`https://pokeapi.co/api/v2/pokemon/${term}`)
-        .then(res => {
-          if (!res.ok) throw new Error('Pokémon tidak ditemukan');
-          return res.json();
-        })
-        .then((details: PokeApiPokemon) => {
-          setSearchResult({
-            id: details.id,
-            name: details.name,
-            imageUrl: `https://img.pokemondb.net/sprites/home/normal/${details.name}.png`,
-            types: details.types.map((t) => t.type.name),
-          });
-        })
-        .catch(() => setSearchError('Pokémon tidak ditemukan'))
-        .finally(() => setSearchLoading(false));
-    }
-  }, [searchTerm, pokemonList]);
-
-  const handleInputChange = useCallback((text: string) => {
-    setSearchTerm(text);
-  }, []);
-
   const handleClear = () => {
     setSearchTerm('');
-    handleInputChange('');
   }
 
   const openDetail = (pokemonId: number) => {
@@ -203,9 +63,8 @@ export function Home() {
             <input
               id='searchinput'
               className="SearchInput"
-              type="text"
               placeholder="Cari Nama, ID, atau Tipe..."
-              bindinput={(e) => handleInputChange(e.detail.value)}
+              bindinput={(e) => setSearchTerm(e.detail.value)}
             />
             {searchTerm && (
               <view
@@ -222,11 +81,13 @@ export function Home() {
         scroll-orientation="vertical"
         className="ScrollContent"
         style={{ width: "100%", flex: 1 }}
-        bindscrolltolower={handleScrollToLower}
+        bindscrolltolower={() => {
+          if (!loading && hasMore) loadMorePokemons();
+        }}
         bindscroll={handleScroll}
         lower-threshold={100}
       >
-        {loading && (
+        {loading && pokemonList.length === 0 && (
           <view className="StatusMessage">
             <image mode="aspectFit" src={'https://mpaas.vercel.app/assets/images/loading-ball.gif'} className="LoadingSpinner" />
             <text className="StatusText">Memuat data dari Pallet Town...</text>
@@ -255,12 +116,12 @@ export function Home() {
                 pokemon={searchResult}
                 onClick={() => openDetail(searchResult.id)}
               />
-            ) : suggestions.length > 0 ? (
+            ) : suggestions && suggestions.length > 0 ? (
               <>
                 <view className="SuggestionTitle">
                   <text className="StatusText">Saran Pokémon:</text>
                 </view>
-                {suggestions.map(pokemon => (
+                {suggestions.map((pokemon) => (
                   <PokemonCard
                     key={pokemon.id}
                     pokemon={pokemon}
@@ -281,7 +142,7 @@ export function Home() {
                     onClick={() => openDetail(pokemon.id)}
                   />
                 ))}
-                {loadingMore && !searchTerm && (
+                {loadingMore && (
                   <view className="LoadingMore" style={'position: absolute; left:0; bottom: -10px;'}>
                     <text className="LoadingMoreText">Memuat lebih banyak Pokémon...</text>
                   </view>
